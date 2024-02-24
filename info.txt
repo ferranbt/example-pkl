@@ -1,0 +1,4 @@
+
+/reth node --chain sepolia --authrpc.jwtsecret ./jwtsecret --authrpc.addr 127.0.0.1 --authrpc.port 8551 --http.addr 127.0.0.1 --http.port 8545 --http --datadir ./reth-sepolia/ --full 
+
+./lighthouse bn --network sepolia --disable-deposit-contract-sync --checkpoint-sync-url https://sepolia.beaconstate.info --execution-endpoint http://localhost:8551 --execution-jwt ./jwtsecret --datadir lighthouse-sepolia

@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  primary:
+    image: consensys/teku:24.2
+    command:
+      - --network
+      - sepolia
+      - --ee-endpoint
+      - http://127.0.0.1:8551
+      - --ee-jwt-secret-file
+      - /tmp/execution-jwt
+      - --log-destination
+      - CONSOLE
+      - --logging
+      - INFO
+      - --checkpoint-sync-url
+      - https://sepolia.beaconstate.info
+    configs:
+      - source: jwttoken
+        target: /tmp/execution-jwt
+    networks:
+      - default
+configs:
+  jwttoken:
+    file: jwtfile
+networks:
+  default:
+    external: true
+    name: sepolia-test

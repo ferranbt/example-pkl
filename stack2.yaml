@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  primary:
+    image: sigp/lighthouse:v5.0.0
+    command:
+    - lighthouse
+    - bn
+    - --network
+    - sepolia
+    - --disable-deposit-contract-sync
+    - --checkpoint-sync-url
+    - https://sepolia.beaconstate.info
+    - --execution-jwt
+    - /tmp/execution-jwt
+    - --datadir
+    - /data
+    - --execution-endpoint
+    - http://localhost:8551
+    - --debug-level
+    - info
+    - --metrics
+    configs:
+    - source: jwttoken
+      target: /tmp/execution-jwt
+configs:
+  jwttoken:
+    file: jwtfile

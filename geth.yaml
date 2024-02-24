@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+  primary:
+    image: ethereum/client-go:v1.13.13
+    command:
+      - --datadir
+      - /data
+      - --sepolia
+      - --db.engine
+      - pebble
+      - --http
+      - --syncmode
+      - snap
+      - --http.addr
+      - 0.0.0.0
+      - --http.port
+      - "8545"
+      - --http.vhosts
+      - "*"
+      - --http.corsdomain
+      - "*"
+      - --authrpc.addr
+      - 0.0.0.0
+      - --authrpc.port
+      - "8551"
+      - --authrpc.vhosts
+      - "*"
+      - --verbosity
+      - "5"
+      - --authrpc.jwtsecret
+      - /tmp/execution-jwt
+      - --metrics.addr
+      - 0.0.0.0
+      - --metrics
+    ports:
+      - "9000:9000"
+    configs:
+      - source: jwttoken
+        target: /tmp/execution-jwt
+    networks:
+      - default
+configs:
+  jwttoken:
+    file: jwtfile
+networks:
+  default:
+    external: true
+    name: sepolia-test

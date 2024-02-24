@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  primary:
+    image: sigp/lighthouse:v5.0.0
+    command:
+      - lighthouse
+      - bn
+      - --network
+      - sepolia
+      - --datadir
+      - /data
+      - --disable-deposit-contract-sync
+      - --http
+      - --http-address
+      - 0.0.0.0
+      - --http-port
+      - "5052"
+      - --checkpoint-sync-url
+      - https://sepolia.beaconstate.info
+      - --execution-jwt
+      - /tmp/execution-jwt
+      - --execution-endpoint
+      - http://geth1_primary:8551
+      - --debug-level
+      - trace
+      - --metrics-address
+      - 0.0.0.0
+      - --metrics-port
+      - "8008"
+      - --metrics
+    configs:
+      - source: jwttoken
+        target: /tmp/execution-jwt
+    ports:
+      - published: 9000
+        target: 9000
+        protocol: tcp
+        mode: host
+      - published: 9000
+        target: 9000
+        protocol: udp
+        mode: host
+    networks:
+      - default
+configs:
+  jwttoken:
+    file: jwtfile
+networks:
+  default:
+    external: true
+    name: sepolia-test

@@ -1,0 +1,14 @@
+
+import "example1.pkl"
+
+local config: example1.LighthouseConfig = new {
+    chain = "Sepolia"
+    metrics = true
+    logLevel = "Info"
+}
+
+some = example1.create(example1.create1(config))
+
+output {
+  value = some
+}

@@ -1,0 +1,195 @@
+/*
+class Event {
+  name: String
+}
+
+event: Event = new {
+    name = "AA"
+}
+*/
+
+/*
+function clone() = new command.PrebuiltCommand {
+     prebuilt = "git.clone"
+}
+*/
+
+/*
+c : Nomad = new {
+    name: "ss"
+}
+*/
+
+/*
+class Language { 
+  name: String
+}
+
+bestForConfig: Language = new { 
+  name = "Pkl"
+}
+*/
+
+typealias LogLevel = "Info"|"Debug"
+
+typealias Chains = "Mainnet"|"Sepolia"
+
+class Spec {
+  name: String
+  image: String
+  args: Listing<String>
+  data: Listing<DataMount>
+}
+
+class DataMount {
+   src: String
+   dst: String
+}
+
+class DockerSwarm {
+    version: String = "3.7"
+    services: Mapping<String, Service>
+    configs: Mapping<String, Config>?
+    networks: Mapping<String, Network>?
+}
+
+class Network {
+    name: String?
+}
+
+class Service {
+    image: String
+    command: Listing<String>
+    configs: Listing<SConfig>?
+    networks: Listing<String>?
+}
+
+class SConfig {
+    source: String
+    target: String
+}
+
+class Config {
+    file: String
+}
+
+class Other {
+    name: String
+}
+
+abstract class NodeConfig {
+    chain: Chains
+    logLevel: LogLevel = "Info"
+    metrics: Boolean = true
+}
+
+class GethConfig extends NodeConfig {
+    dbEngine: String = "pebble"
+}
+
+function create2(config: GethConfig) = new Spec {
+    name = "geth"
+    image = "ethereum/client-go:v1.13.13"
+    args {
+        "--datadir" "/data"
+        "--sepolia"
+        "--db.engine" config.dbEngine
+        "--http"
+        "--syncmode" "snap"
+        "--http.addr" "0.0.0.0"
+        "--http.port" "8545"
+        "--http.vhosts" "*"
+        "--http.corsdomain" "*"
+        "--authrpc.addr" "0.0.0.0"
+        "--authrpc.port" "8551"
+        "--authrpc.vhosts" "*"
+        "--authrpc.jwtsecret" "/tmp/execution-jwt"
+        "--metrics.addr" "0.0.0.0"
+        when (config.metrics) {
+            "--metrics"
+        }
+    }
+}
+
+class LighthouseConfig extends NodeConfig {
+    executionNode: String
+}
+
+function create1(config: LighthouseConfig) = new Spec {
+    local infoMap = new Mapping<LogLevel, String> {
+        ["Info"] = "info"
+    }
+
+    name = "example"
+    image = "sigp/lighthouse:v5.0.0"
+
+    args {
+        "lighthouse" "bn"
+        "--network" "sepolia"
+        "--datadir" "/data"
+        "--disable-deposit-contract-sync"
+        "--http"
+        "--http-address" "0.0.0.0"
+        "--http-port" "5052"
+        "--checkpoint-sync-url" "https://sepolia.beaconstate.info"
+        "--execution-jwt" "/tmp/execution-jwt"
+        "--execution-endpoint" "http://geth1_primary:8551"
+        "--debug-level" infoMap["Info"]
+        "--metrics-address" "0.0.0.0"
+        "--metrics-port" "8008"
+        when (config.metrics) {
+            "--metrics"
+        }
+    }
+}
+
+function create(spec: Spec) = new DockerSwarm {
+    services {
+        ["primary"] {
+            image = spec.image
+            command = spec.args
+            configs {
+                new {
+                    source = "jwttoken"
+                    target = "/tmp/execution-jwt"
+                }
+            }
+            networks {
+                "sepolia-test"
+            }
+        }
+    }
+    configs {
+        ["jwttoken"] {
+            file = "jwtfile"
+        }
+    }
+    networks {
+        ["sepolia-test"] {
+        }
+    }
+}
+
+/*
+local config: LighthouseConfig = new {
+    chain = "Sepolia"
+    executionNode = "yy"
+    metrics = true
+    logLevel = "Info"
+}
+*/
+
+//some = create(create1(config))
+
+/*
+typealias Diet = "Seeds"|"Berries"|"Insects"
+diet: Diet = "Seeds"
+*/
+
+/*
+config: LighthouseConfig = new {
+    executionNode = "x"
+    chain = "Mainnet"
+    logLevel = "Debug"
+}
+*/
